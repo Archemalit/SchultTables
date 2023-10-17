@@ -1,9 +1,17 @@
-import java.util.InputMismatchException;
-import java.util.Scanner;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 class OutCountOfChoices extends Exception
 {
     public OutCountOfChoices(final String message) {
+        super(message);
+    }
+}
+
+class notRealFormat extends Exception
+{
+    public notRealFormat(final String message) {
         super(message);
     }
 }
@@ -48,7 +56,46 @@ public class Main
     }
 
     public static void OneStartGame() {
-        System.out.println("Вы выбрали первый пункт.");
+        Dictionary data_numbers_ids = new Hashtable();
+        List<Integer> data_numbers = new ArrayList<>();
+        for (int i = 0; i < 25; i++ ) {
+            data_numbers.add(i + 1);
+        }
+        Collections.shuffle(data_numbers);
+        for (int i = 0; i < 25; i++) {
+            int left = (i / (int) Math.pow(25, 0.5)) + 1;
+            int right = (i % (int) Math.pow(25, 0.5)) + 1;
+            data_numbers_ids.put(data_numbers.get(i), left + " " + right);
+        }
+
+        for (int i = 0; i < 25; i++) {
+            System.out.format("%8d", data_numbers.get(i));
+            if ((i + 1) % 5 == 0) {
+                System.out.println();
+            }
+        }
+        String answer;
+        // Проблема с тем, что после ввода действия 1, сразу в answer заносится ""
+        while (true) {
+            try {
+                answer = scanner.nextLine();
+                System.out.println(answer);
+                Pattern p = Pattern.compile("[1-9] [1-9]");
+                Matcher m = p.matcher(answer);
+                System.out.println(m.matches());
+                if (!m.matches()) {
+                    throw new notRealFormat("Something happened");
+                } else {
+                    break;
+                }
+            }  catch (notRealFormat e2) {
+                System.out.print(ANSI_RED_BACKGROUND + "Вы ввели что-то не то!" + ANSI_RESET + " Введите ещё раз (в формате \"строка столбец\"): ");
+            }
+        }
+        System.out.println(answer);
+
+//        System.out.println(data_numbers);
+//        System.out.println(data_numbers_ids);
     }
 
     public static void ThreeChangeCharacterOrder() {
