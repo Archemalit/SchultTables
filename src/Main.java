@@ -55,6 +55,15 @@ public class Main
         }
     }
 
+    public static void drawTable(List<Integer> data_numbers, int count) {
+        System.out.println();
+        for (int i = 0; i < count; i++) {
+            System.out.format("%8d", data_numbers.get(i));
+            if ((i + 1) % (int) Math.pow(count, 0.5) == 0) {
+                System.out.println();
+            }
+        }
+    }
     public static void OneStartGame() {
         Dictionary data_numbers_ids = new Hashtable();
         List<Integer> data_numbers = new ArrayList<>();
@@ -68,31 +77,52 @@ public class Main
             data_numbers_ids.put(data_numbers.get(i), left + " " + right);
         }
 
-        for (int i = 0; i < 25; i++) {
-            System.out.format("%8d", data_numbers.get(i));
-            if ((i + 1) % 5 == 0) {
-                System.out.println();
-            }
-        }
+        drawTable(data_numbers, 25);
         String answer;
-        // Проблема с тем, что после ввода действия 1, сразу в answer заносится ""
-        while (true) {
-            try {
-                answer = scanner.nextLine();
-                System.out.println(answer);
-                Pattern p = Pattern.compile("[1-9] [1-9]");
-                Matcher m = p.matcher(answer);
-                System.out.println(m.matches());
-                if (!m.matches()) {
-                    throw new notRealFormat("Something happened");
-                } else {
-                    break;
+        String a = scanner.nextLine();
+
+        int count = 1;
+        int all_count = 1;
+        while (count <= 25) {
+            while (true) {
+                try {
+                    if (all_count % 10 == 0) {
+                        drawTable(data_numbers, 25);
+                    }
+                    all_count += 1;
+                    answer = scanner.nextLine();
+                    Pattern p = Pattern.compile("[1-9]+ [1-9]+");
+                    Matcher m = p.matcher(answer);
+                    if (!m.matches()) {
+                        throw new notRealFormat("Something happened");
+                    } else {
+                        try {
+                            String [] coords = answer.split(" ");
+                            int row = Integer.parseInt(coords[0]);
+                            int column = Integer.parseInt(coords[1]);
+                            if (row > 5 | column > 5) {
+                                throw new notRealFormat("Something happened");
+                            } else {
+                                if (Objects.equals(data_numbers_ids.get(count).toString(), answer)) {
+                                    System.out.println("Верно");
+                                    break;
+                                } else {
+                                    System.out.println("Неверно");
+                                }
+                            }
+                        } catch (notRealFormat e3) {
+                            System.out.print(ANSI_RED_BACKGROUND + "Вы ввели что-то не то!" + ANSI_RESET + " Введите ещё раз (в формате \"строка столбец\"): ");
+                        }
+                    }
+                }  catch (notRealFormat e2) {
+                    System.out.print(ANSI_RED_BACKGROUND + "Вы ввели что-то не то!" + ANSI_RESET + " Введите ещё раз (в формате \"строка столбец\"): ");
                 }
-            }  catch (notRealFormat e2) {
-                System.out.print(ANSI_RED_BACKGROUND + "Вы ввели что-то не то!" + ANSI_RESET + " Введите ещё раз (в формате \"строка столбец\"): ");
             }
+            count++;
         }
-        System.out.println(answer);
+
+        System.out.println("Поздравляю,вы прошли таблицу за ...\n");
+        ChoosingAnAction();
 
 //        System.out.println(data_numbers);
 //        System.out.println(data_numbers_ids);
